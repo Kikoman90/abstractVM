@@ -20,8 +20,8 @@
 <STATE_INT8>[-+]?[0-9]+									    { BEGIN(QUIT); return INT8; }
 <STATE_INT16>[-+]?[0-9]+          	  					    { BEGIN(QUIT); return INT16; }  
 <STATE_INT32>[-+]?[0-9]+             					    { BEGIN(QUIT); return INT32; }  
-<STATE_FLOAT>[-+]?[0-9]*\.?[0-9]*[f]?([eE][+-]?[0-9]+)?	    { BEGIN(QUIT); return FLOAT; }
-<STATE_DOUBLE>[-+]?[0-9]*\.?[0-9]*[f]?([eE][+-]?[0-9]+)?    { BEGIN(QUIT); return DOUBLE; }
+<STATE_FLOAT>[-+]?[0-9]*\.?[0-9]*([eE][+-]?[0-9]+)?[f]?	    { BEGIN(QUIT); return FLOAT; }
+<STATE_DOUBLE>[-+]?[0-9]*\.?[0-9]*([eE][+-]?[0-9]+)?[f]?    { BEGIN(QUIT); return DOUBLE; }
 <QUIT>")"													BEGIN(INITIAL);
 
 "push"                                                      return PUSH;

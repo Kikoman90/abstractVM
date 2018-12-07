@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 17:15:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/06 20:01:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/07 19:09:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 AVMException::AVMException() {}
 
-AVMException::AVMException(const std::string msg, unsigned int line) { addMsg(msg, line); }
+AVMException::AVMException(std::string const msg, unsigned int line) { addMsg(msg, line); }
 
 AVMException::AVMException(AVMException const &src) { _msg = src._msg; }
 
-const char  *AVMException::what() const throw() { return (_msg.c_str()); }
+const char          *AVMException::what() const throw() { return (_msg.c_str()); }
 
-bool        AVMException::empty() const { return (_msg.empty()); }
+bool                AVMException::empty() const { return (_msg.empty()); }
 
-void        AVMException::addMsg(const std::string msg, unsigned int line) {
+void                AVMException::addMsg(std::string const msg, unsigned int line) {
 
     std::stringstream   cat;
 
@@ -36,5 +36,7 @@ void        AVMException::addMsg(const std::string msg, unsigned int line) {
     }
 
 }
+
+std::string const   &AVMException::getMsg() const { return (_msg); }
 
 AVMException::~AVMException() throw() {}

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:28:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/06 19:35:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/07 19:31:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,14 @@
 #define PARSER_HPP
 
 #include "Lexer.hpp"
-#include <array>
+#include "OpFactory.hpp"
+#include <map>
 
 class Parser {
 
 public:
 
-    Parser(const std::list<lexeme> &lexemes);
+    Parser(std::list<lexeme> const &lexemes);
     ~Parser();
 
     void        exec();
@@ -32,23 +33,26 @@ private:
 
     Parser      &operator=(Parser const &rhs);
 
-    void        push(const std::list<lexeme>::const_iterator &it) const;
-    void        pop(const std::list<lexeme>::const_iterator &it) const;
-    void        dump(const std::list<lexeme>::const_iterator &it) const;
-    void        assert(const std::list<lexeme>::const_iterator &it) const;
-    void        add(const std::list<lexeme>::const_iterator &it) const;
-    void        sub(const std::list<lexeme>::const_iterator &it) const;
-    void        mul(const std::list<lexeme>::const_iterator &it) const;
-    void        div(const std::list<lexeme>::const_iterator &it) const;
-    void        mod(const std::list<lexeme>::const_iterator &it) const;
-    void        print(const std::list<lexeme>::const_iterator &it) const;
-    void        exit(const std::list<lexeme>::const_iterator &it) const;
+    void        push(std::list<lexeme>::const_iterator const &it);
+    void        pop(std::list<lexeme>::const_iterator const &it);
+    void        dump(std::list<lexeme>::const_iterator const &it);
+    void        assert(std::list<lexeme>::const_iterator const &it);
+    void        add(std::list<lexeme>::const_iterator const &it);
+    void        sub(std::list<lexeme>::const_iterator const &it);
+    void        mul(std::list<lexeme>::const_iterator const &it);
+    void        div(std::list<lexeme>::const_iterator const &it);
+    void        mod(std::list<lexeme>::const_iterator const &it);
+    void        print(std::list<lexeme>::const_iterator const &it);
+    void        exit(std::list<lexeme>::const_iterator const &it);
 
-    unsigned int            _line;
-    
-    const std::list<lexeme> _lexemes;
+    unsigned int                _line;
+    OpFactory const             _opf;
+    AVMException                _avme;
+    std::list<lexeme> const     _lexemes;
+    std::list<IOperand const *> _operands;
 
-    std::array<void (Parser::*)(const std::list<lexeme>::const_iterator &) const, 11>   _operations;
+    std::map<eToken, eOperandType>                                                  _operandType;
+    std::map<eToken, void (Parser::*)(std::list<lexeme>::const_iterator const &)>   _operations;
 
 };
 

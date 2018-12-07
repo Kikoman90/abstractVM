@@ -13,10 +13,11 @@ DIR_SRCS = sources
 DIR_OBJS = tmp
 
 SRCS =	main.cpp \
+		tokens.cpp \
 		Lexer.cpp \
 		Parser.cpp \
+		OpFactory.cpp \
 		AVMException.cpp \
-		tokens.cpp \
 
 LEX = tokens.flex
 

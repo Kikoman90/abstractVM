@@ -6,11 +6,27 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:10:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/06 19:54:41 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/07 20:23:56 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Lexer.hpp"
+#include <cmath>//
+///
+//
+//
+///
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 extern int      yylex(void);
 extern FILE*    yyin;
@@ -20,11 +36,11 @@ extern int      yyleng;
 Lexer::Lexer(int ac, char **av) : _lexemes(0), _inputFromFile(false) {
 
     if (ac > 2)
-        throw AVMException("lexer error: too many arguments", 0);
+        throw AVMException("lexer error: too many arguments");
     else if (ac == 2) {
         _inputFromFile = true;
         if (!(yyin = fopen(av[1], "r")))
-            throw AVMException("lexer error: file does not exist or couldn't be opened", 0);
+            throw AVMException("lexer error: file does not exist or couldn't be opened");
     }
 
 }
@@ -61,16 +77,17 @@ void                    Lexer::showLexemes() const {
         "DIV", "MOD", "PRINT", "EXIT", "END", "COMMENT", "EOL", \
         "INT8", "INT16", "INT32", "FLOAT", "DOUBLE", "ERROR" };
 
+    //td::cout << log2((float)ERROR) << std::endl;
     std::cout << "list length = " << _lexemes.size() << std::endl;
     for (std::list<lexeme>::const_iterator it = _lexemes.begin(); it != _lexemes.end(); ++it) {
-        std::cout << '<' << tokenTypes[(*it).type - PUSH];
+        std::cout << '<' << tokenTypes[(int)log2((float)it->type)];
         if ((*it).type != EOL)
-            std::cout << ", " << (*it).value;
+            std::cout << ", " << it->value;
         std::cout << '>' << std::endl;
     }
 
 }
 
-const std::list<lexeme> &Lexer::getLexemes() const { return (_lexemes); }
+std::list<lexeme> const &Lexer::getLexemes() const { return (_lexemes); }
 
 Lexer::~Lexer() {}

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:18:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/06 18:57:23 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/07 20:17:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,32 @@
 #include <list>
 
 enum eToken {
-    PUSH = 1,
-    POP,
-    DUMP,
-    ASSERT,
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    MOD,
-    PRINT,
-    EXIT,
-    END,
-    COMMENT,
-    EOL,
-    INT8,
-    INT16,
-    INT32,
-    FLOAT,
-    DOUBLE,
-    ERROR
+    PUSH = 1 << 0,
+    POP = 1 << 1,
+    DUMP = 1 << 2,
+    ASSERT = 1 << 3,
+    ADD = 1 << 4,
+    SUB = 1 << 5,
+    MUL = 1 << 6,
+    DIV = 1 << 7,
+    MOD = 1 << 8,
+    PRINT = 1 << 9,
+    EXIT = 1 << 10,
+    END = 1 << 11,
+    COMMENT = 1 << 12,
+    EOL = 1 << 13,
+    INT8 = 1 << 14,
+    INT16 = 1 << 15,
+    INT32 = 1 << 16,
+    FLOAT = 1 << 17,
+    DOUBLE = 1 << 18,
+    ERROR = 1 << 19
 };
 
 struct lexeme {
 
     eToken              type;
-    const std::string   value;
+    std::string const   value;
 
 };
 
@@ -57,7 +57,7 @@ public:
     void                    exec();
 
     void                    showLexemes() const; // remove me
-    const std::list<lexeme> &getLexemes() const;
+    std::list<lexeme> const &getLexemes() const;
 
 private:
     
