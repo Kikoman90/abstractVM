@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:28:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/07 19:31:56 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/10 15:32:02 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ private:
     void        div(std::list<lexeme>::const_iterator const &it);
     void        mod(std::list<lexeme>::const_iterator const &it);
     void        print(std::list<lexeme>::const_iterator const &it);
-    void        exit(std::list<lexeme>::const_iterator const &it);
 
     unsigned int                _line;
     OpFactory const             _opf;

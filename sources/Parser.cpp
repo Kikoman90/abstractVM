@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/07 20:20:38 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/10 21:29:11 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <cmath>
 
 Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
+
     _operations[PUSH] = &Parser::push;
     _operations[POP] = &Parser::pop;
     _operations[DUMP] = &Parser::dump;
@@ -24,7 +25,6 @@ Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
     _operations[DIV] = &Parser::div;
     _operations[MOD] = &Parser::mod;
     _operations[PRINT] = &Parser::print;
-    _operations[EXIT] = &Parser::exit;
 
     _operandType[INT8] = Int8;
     _operandType[INT16] = Int16;
@@ -34,39 +34,32 @@ Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
 
 }
 
-// instructions Push and Assert MUST be followed by a value (else throw exception)
-// instructions (or values (case above)) MUST be followed by either a comment or Eol EXCEPT if it is the last token
-// comments MUST be followed by Eol EXCEPT if it is the last token
-
 void        Parser::exec() {
 
-    int iter = 0;
-
     for (std::list<lexeme>::const_iterator it = _lexemes.begin(); it != _lexemes.end(); ++it) {
-        std::cout << "iter = " << iter++ << std::endl;
+        std::cout << Lexer::_toktype[it->type] << std::endl;
         if (it->type == EOL)
             _line++;
-        else if (it != _lexemes.end() && !(it->type & (PUSH | ASSERT | COMMENT)) && !(std::next(it)->type & (COMMENT | EOL))) {
-            std::cout << "LINE IS " << _line << std::endl;
-            std::cout << "reminded comment " << COMMENT << " and EOL " << EOL << std::endl;
-            std::cout << "reminded both " << (EOL | COMMENT) << std::endl;
-            std::cout << std::next(it)->type << std::endl;
-            _avme.addMsg("Parser error: multiple instructions", _line);
+        else if (std::next(it) != _lexemes.end() && !(it->type & (PUSH | ASSERT | COMMENT)) && !(std::next(it)->type & (COMMENT | EOL)))
+            _avme.addMsg("parser error: multiple instructions", _line);
+        if (it->type == EXIT) {
+            if (!_avme.empty())
+                throw _avme;
+            return ;
         }
-        if (it->type < END)
+        else if (it->type < EXIT)
             (this->*_operations[it->type])(it);
     }
-    _avme.addMsg("Parser error: missing 'exit' instruction");
+    _avme.addMsg("parser error: missing 'exit' instruction");
     throw _avme;
-
 }
 
 void        Parser::push(const std::list<lexeme>::const_iterator &it) {
 
     std::list<lexeme>::const_iterator it_next;
 
-    if (it == _lexemes.end() || (it_next = std::next(it))->type < INT8) {
-        _avme.addMsg("Parser error: 'push' instruction must be followed by a value", _line);
+    if ((it_next = std::next(it)) == _lexemes.end() || it_next->type < INT8) {
+        _avme.addMsg("parser error: 'push' instruction must be followed by a value", _line);
         return ;
     }
     try {
@@ -83,9 +76,10 @@ void        Parser::pop(const std::list<lexeme>::const_iterator &it) {
     
     (void)it;
     if (_operands.empty()) {
-        _avme.addMsg("Parser error: 'pop' instruction on empty stack", _line);
+        _avme.addMsg("parser error: 'pop' instruction on empty stack", _line);
         return ;
     }
+    delete _operands.front();
     _operands.pop_front();
 
 }
@@ -100,52 +94,123 @@ void        Parser::dump(const std::list<lexeme>::const_iterator &it) {
 
 void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
     
-    std::list<lexeme>::const_iterator it_next;
+    std::list<lexeme>::const_iterator   it_next;
+    int                                 error = 0;
     
     if (_operands.empty()) {
-        _avme.addMsg("Parser error: 'assert' instruction on empty stack", _line);
-        return ;
+        _avme.addMsg("parser error: 'assert' instruction on empty stack", _line);
+        error = 1;
     }
-    if (it == _lexemes.end() || (it_next = std::next(it))->type < INT8) {
-        _avme.addMsg("Parser error: 'assert' instruction must be followed by a value", _line);
-        return ;
+    if ((it_next = std::next(it)) == _lexemes.end() || it_next->type < INT8) {
+        _avme.addMsg("parser error: 'assert' instruction must be followed by a value", _line);
+        error = 1;
     }
-    if ((_operandType[it_next->type] != _operands.front()->getType()) || !it_next->value.compare(_operands.front()->toString()))
-        _avme.addMsg("Parser error: 'assert' instruction is false");
+    if (error)
+        return ;
+    if ((_operandType[it_next->type] != _operands.front()->getType()) || it_next->value.compare(_operands.front()->toString()))
+        _avme.addMsg("parser error: 'assert' instruction is false", _line);
 
 }
 
 void        Parser::add(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.size() < 2)
+        _avme.addMsg("parser error: 'add' operation; less than 2 values on the stack", _line);
+    IOperand const *v1 = _operands.front();
+    _operands.pop_front();
+    IOperand const *v2 = _operands.front();
+    _operands.pop_front();
+    try { _operands.push_front(*v2 + *v1); }
+    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    delete v1;
+    delete v2;
+
 }
 
 void        Parser::sub(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.size() < 2)
+        _avme.addMsg("parser error: 'sub' operation; less than 2 values on the stack", _line);
+    IOperand const *v1 = _operands.front();
+    _operands.pop_front();
+    IOperand const *v2 = _operands.front();
+    _operands.pop_front();
+    try { _operands.push_front(*v2 - *v1); }
+    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    delete v1;
+    delete v2;
+
 }
 
 void        Parser::mul(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.size() < 2)
+        _avme.addMsg("parser error: 'mul' operation; less than 2 values on the stack", _line);
+    IOperand const *v1 = _operands.front();
+    _operands.pop_front();
+    IOperand const *v2 = _operands.front();
+    _operands.pop_front();
+    try { _operands.push_front(*v2 * *v1); }
+    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    delete v1;
+    delete v2;
+
 }
 
 void        Parser::div(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.size() < 2)
+        _avme.addMsg("parser error: 'div' operation; less than 2 values on the stack", _line);
+    IOperand const *v1 = _operands.front();
+    _operands.pop_front();
+    IOperand const *v2 = _operands.front();
+    _operands.pop_front();
+    try { _operands.push_front(*v2 / *v1); }
+    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    delete v1;
+    delete v2;
+
 }
 
 void        Parser::mod(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.size() < 2)
+        _avme.addMsg("parser error: 'mod' operation; less than 2 values on the stack", _line);
+    IOperand const *v1 = _operands.front();
+    _operands.pop_front();
+    IOperand const *v2 = _operands.front();
+    _operands.pop_front();
+    try { _operands.push_front(*v2 % *v1); }
+    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    delete v1;
+    delete v2;
+
 }
 
 void        Parser::print(const std::list<lexeme>::const_iterator &it) {
+
     (void)it;
+    if (_operands.empty()) {
+        _avme.addMsg("parser error: 'print' instruction on empty stack", _line);
+        return ;
+    }
+    IOperand const *op = _operands.front();
+    if (op->getType() != Int8) {
+        _avme.addMsg("parser error: 'print' instruction; type is not 8-bit integer", _line);
+        return ;
+    }
+    std::cout << static_cast<char>(std::stoi(op->toString())) << std::endl;
+
 }
 
-void        Parser::exit(const std::list<lexeme>::const_iterator &it) {
+Parser::~Parser() {
     
-    (void)it;
-    if (!_avme.empty())
-        throw _avme;
-    std::exit(0);
+    for (std::list<IOperand const *>::iterator it = _operands.begin(); it != _operands.end(); ++it)
+        delete *it;
 
 }
-
-Parser::~Parser() {}

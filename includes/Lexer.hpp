@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:18:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/07 20:17:09 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/10 11:47:19 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "AVMException.hpp"
 #include <iostream>
 #include <list>
+#include <map> // remove me
 
 enum eToken {
     PUSH = 1 << 0,
@@ -37,7 +38,7 @@ enum eToken {
     INT32 = 1 << 16,
     FLOAT = 1 << 17,
     DOUBLE = 1 << 18,
-    ERROR = 1 << 19
+    ERROR = 1 << 19,
 };
 
 struct lexeme {
@@ -58,6 +59,8 @@ public:
 
     void                    showLexemes() const; // remove me
     std::list<lexeme> const &getLexemes() const;
+
+    static std::map<eToken, std::string>    _toktype; // tmp
 
 private:
     

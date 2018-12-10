@@ -3,4 +3,6 @@
 ; ------------------
 
 push int8(42)
+assert int8(32)
+assert int8(42)
 exit

@@ -1,0 +1,13 @@
+; ------------------
+; 01_push_int8.avm -
+; ------------------
+pop
+dump
+push int8(42)
+dump
+exito
+assert erroeeiieieieier
+pup assert int8(42)
+assert float(42)
+exit
+exit uitii

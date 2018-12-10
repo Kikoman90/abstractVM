@@ -31,7 +31,7 @@ $(NAME): $(LEXR) $(OBJS)
 		@$(CLANG) $(FLAGS) -o $@ $(OBJS)
 		@echo "\033[35;1m[abstractVM] compilation SUCCESS"
 
-$(DIR_SRCS)/%.cpp: $(DIR_LEX)/%.lex
+$(DIR_SRCS)/%.cpp: $(DIR_LEX)/%.flex
 		@flex -o $@ $<
 
 $(DIR_OBJS)/%.o: $(DIR_SRCS)/%.cpp

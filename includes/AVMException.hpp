@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:52:16 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/07 19:38:39 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/10 15:42:12 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sstream>
 #include <string>
 
-class AVMException : std::exception {
+class AVMException : public std::exception {
 
 public:
     
