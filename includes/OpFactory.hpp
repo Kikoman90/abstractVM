@@ -6,14 +6,14 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 14:47:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 21:43:22 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 13:38:05 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef OP_FACTORY_HPP
 #define OP_FACTORY_HPP
 
-#include "Operand.hpp"
+#include "IOperand.hpp"
 #include <array>
 
 class OpFactory {

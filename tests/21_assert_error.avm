@@ -1,0 +1,12 @@
+; -------------------
+; 21_assert_error.avm -
+; -------------------
+
+push double(304.23e-12f)
+dump
+assert float(304.23e-12f)
+assert double(304230.000000001e-15)
+assert double(3.042300e-10f)
+assert double(3.0423e-10)
+assert double(304.23e-12f)
+exit

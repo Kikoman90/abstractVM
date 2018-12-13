@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 17:15:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 11:26:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 18:47:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,9 @@ bool                AVMException::empty() const { return (_msg.empty()); }
 void                AVMException::addMsg(std::string const msg, unsigned int line) {
 
     std::stringstream   cat;
-
-    /*cat << msg;
-    if (line != 0)
-        cat << " (line " << line << ")";*/
     
     if (!_msg.empty())
         _msg += "\n";
-
 
     if (line == 0)
         _msg += msg;

@@ -6,11 +6,12 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 15:13:38 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 21:41:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 13:37:37 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "OpFactory.hpp"
+#include "Operand.hpp"
 
 OpFactory::OpFactory() {
     _tab[0] = &OpFactory::createInt8;

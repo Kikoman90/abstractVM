@@ -6,35 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:10:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 16:10:05 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 18:45:28 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Lexer.hpp"
-#include <utility> // remove me
-
-std::pair<eToken, std::string>  pairs[] = { std::make_pair(PUSH, "PUSH"),
-                                            std::make_pair(POP, "POP"),
-                                            std::make_pair(DUMP, "DUMP"),
-                                            std::make_pair(ASSERT, "ASSERT"),
-                                            std::make_pair(ADD, "ADD"),
-                                            std::make_pair(SUB, "SUB"),
-                                            std::make_pair(MUL, "MUL"),
-                                            std::make_pair(DIV, "DIV"),
-                                            std::make_pair(MOD, "MOD"),
-                                            std::make_pair(PRINT, "PRINT"),
-                                            std::make_pair(EXIT, "EXIT"),
-                                            std::make_pair(END, "END"),
-                                            std::make_pair(COMMENT, "COMMENT"),
-                                            std::make_pair(EOL, "EOL"),
-                                            std::make_pair(INT8, "INT8"),
-                                            std::make_pair(INT16, "INT16"),
-                                            std::make_pair(INT32, "INT32"),
-                                            std::make_pair(FLOAT, "FLOAT"),
-                                            std::make_pair(DOUBLE, "DOUBLE"),
-                                            std::make_pair(ERROR, "ERROR") }; // tmp
-
-std::map<eToken, std::string> Lexer::_toktype(pairs, pairs + 20); // tmp
 
 extern int      yylex(void);
 extern FILE*    yyin;
@@ -48,7 +24,7 @@ Lexer::Lexer(int ac, char **av) : _lexemes(0), _inputFromFile(false) {
     else if (ac == 2) {
         _inputFromFile = true;
         if (!(yyin = fopen(av[1], "r")))
-            throw AVMException("lexer error: file does not exist or couldn't be opened");
+            throw AVMException("lexer error: file does not exist or could not be opened");
     }
 
 }
@@ -78,19 +54,6 @@ void                    Lexer::exec() {
     }
     if (!avme.empty())
         throw avme;
-
-}
-
-// remove me
-void                    Lexer::showLexemes() const {
-    
-    std::cout << "list length = " << _lexemes.size() << std::endl;
-    for (std::list<lexeme>::const_iterator it = _lexemes.begin(); it != _lexemes.end(); ++it) {
-        std::cout << '<' << _toktype[it->type];
-        if ((*it).type != EOL)
-            std::cout << ", " << it->value;
-        std::cout << '>' << std::endl;
-    }
 
 }
 

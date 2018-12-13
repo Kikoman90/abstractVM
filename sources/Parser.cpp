@@ -6,12 +6,11 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 21:29:11 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 19:19:27 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parser.hpp"
-#include <cmath>
 
 Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
 
@@ -37,7 +36,6 @@ Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
 void        Parser::exec() {
 
     for (std::list<lexeme>::const_iterator it = _lexemes.begin(); it != _lexemes.end(); ++it) {
-        std::cout << Lexer::_toktype[it->type] << std::endl;
         if (it->type == EOL)
             _line++;
         else if (std::next(it) != _lexemes.end() && !(it->type & (PUSH | ASSERT | COMMENT)) && !(std::next(it)->type & (COMMENT | EOL)))
@@ -107,7 +105,8 @@ void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
     }
     if (error)
         return ;
-    if ((_operandType[it_next->type] != _operands.front()->getType()) || it_next->value.compare(_operands.front()->toString()))
+    IOperand const *op = _opf.createOperand(_operandType[it_next->type], it_next->value);
+    if (op->getType() != _operands.front()->getType() || op->toString().compare(_operands.front()->toString()))
         _avme.addMsg("parser error: 'assert' instruction is false", _line);
 
 }
@@ -115,14 +114,25 @@ void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
 void        Parser::add(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
-    if (_operands.size() < 2)
+    if (_operands.size() < 2) {
         _avme.addMsg("parser error: 'add' operation; less than 2 values on the stack", _line);
-    IOperand const *v1 = _operands.front();
+        return ;
+    }
+    std::list<const IOperand *>::const_iterator iter = _operands.begin();
+    IOperand const *v1 = *iter;
+    std::advance(iter, 1);
+    IOperand const *v2 = *iter;
+    IOperand const *sub;
+    try {
+        sub = *v2 + *v1;
+    }
+    catch (AVMException &e) {
+        _avme.addMsg(e.getMsg(), _line);
+        return ;
+    }
     _operands.pop_front();
-    IOperand const *v2 = _operands.front();
     _operands.pop_front();
-    try { _operands.push_front(*v2 + *v1); }
-    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    _operands.push_front(sub);
     delete v1;
     delete v2;
 
@@ -131,14 +141,25 @@ void        Parser::add(const std::list<lexeme>::const_iterator &it) {
 void        Parser::sub(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
-    if (_operands.size() < 2)
+    if (_operands.size() < 2) {
         _avme.addMsg("parser error: 'sub' operation; less than 2 values on the stack", _line);
-    IOperand const *v1 = _operands.front();
+        return ;
+    }
+    std::list<const IOperand *>::const_iterator iter = _operands.begin();
+    IOperand const *v1 = *iter;
+    std::advance(iter, 1);
+    IOperand const *v2 = *iter;
+    IOperand const *sub;
+    try {
+        sub = *v2 - *v1;
+    }
+    catch (AVMException &e) {
+        _avme.addMsg(e.getMsg(), _line);
+        return ;
+    }
     _operands.pop_front();
-    IOperand const *v2 = _operands.front();
     _operands.pop_front();
-    try { _operands.push_front(*v2 - *v1); }
-    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    _operands.push_front(sub);
     delete v1;
     delete v2;
 
@@ -147,14 +168,25 @@ void        Parser::sub(const std::list<lexeme>::const_iterator &it) {
 void        Parser::mul(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
-    if (_operands.size() < 2)
+    if (_operands.size() < 2) {
         _avme.addMsg("parser error: 'mul' operation; less than 2 values on the stack", _line);
-    IOperand const *v1 = _operands.front();
+        return ;
+    }
+    std::list<const IOperand *>::const_iterator iter = _operands.begin();
+    IOperand const *v1 = *iter;
+    std::advance(iter, 1);
+    IOperand const *v2 = *iter;
+    IOperand const *sub;
+    try {
+        sub = *v2 * *v1;
+    }
+    catch (AVMException &e) {
+        _avme.addMsg(e.getMsg(), _line);
+        return ;
+    }
     _operands.pop_front();
-    IOperand const *v2 = _operands.front();
     _operands.pop_front();
-    try { _operands.push_front(*v2 * *v1); }
-    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    _operands.push_front(sub);
     delete v1;
     delete v2;
 
@@ -163,14 +195,25 @@ void        Parser::mul(const std::list<lexeme>::const_iterator &it) {
 void        Parser::div(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
-    if (_operands.size() < 2)
+    if (_operands.size() < 2) {
         _avme.addMsg("parser error: 'div' operation; less than 2 values on the stack", _line);
-    IOperand const *v1 = _operands.front();
+        return ;
+    }
+    std::list<const IOperand *>::const_iterator iter = _operands.begin();
+    IOperand const *v1 = *iter;
+    std::advance(iter, 1);
+    IOperand const *v2 = *iter;
+    IOperand const *sub;
+    try {
+        sub = *v2 / *v1;
+    }
+    catch (AVMException &e) {
+        _avme.addMsg(e.getMsg(), _line);
+        return ;
+    }
     _operands.pop_front();
-    IOperand const *v2 = _operands.front();
     _operands.pop_front();
-    try { _operands.push_front(*v2 / *v1); }
-    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    _operands.push_front(sub);
     delete v1;
     delete v2;
 
@@ -179,14 +222,25 @@ void        Parser::div(const std::list<lexeme>::const_iterator &it) {
 void        Parser::mod(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
-    if (_operands.size() < 2)
+    if (_operands.size() < 2) {
         _avme.addMsg("parser error: 'mod' operation; less than 2 values on the stack", _line);
-    IOperand const *v1 = _operands.front();
+        return ;
+    }
+    std::list<const IOperand *>::const_iterator iter = _operands.begin();
+    IOperand const *v1 = *iter;
+    std::advance(iter, 1);
+    IOperand const *v2 = *iter;
+    IOperand const *sub;
+    try {
+        sub = *v2 % *v1;
+    }
+    catch (AVMException &e) {
+        _avme.addMsg(e.getMsg(), _line);
+        return ;
+    }
     _operands.pop_front();
-    IOperand const *v2 = _operands.front();
     _operands.pop_front();
-    try { _operands.push_front(*v2 % *v1); }
-    catch (AVMException &e) { _avme.addMsg(e.getMsg(), _line); }
+    _operands.push_front(sub);
     delete v1;
     delete v2;
 

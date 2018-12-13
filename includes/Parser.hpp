@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:28:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 15:32:02 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 18:52:47 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "Lexer.hpp"
 #include "OpFactory.hpp"
+#include <iostream>
 #include <map>
 
 class Parser {

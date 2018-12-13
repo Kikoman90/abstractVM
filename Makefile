@@ -2,7 +2,7 @@ NAME = avm
 
 CLANG = clang++
 
-FLAGS = -std=c++11 -Wall -Wextra -Werror -Wno-deprecated-register
+FLAGS = -std=c++11 -Wall -Wextra -Werror -Wno-deprecated-register -MMD
 
 HEADERS = includes
 
@@ -23,12 +23,18 @@ LEX = tokens.flex
 
 LEXR = $(addprefix $(DIR_SRCS)/, $(LEX:.flex=.cpp))
 
+DPDS = $(addprefix $(DIR_OBJS)/, $(SRCS:.cpp=.d))
+
 OBJS = $(addprefix $(DIR_OBJS)/, $(SRCS:.cpp=.o))
+
+opti:
+		@make -j all
 
 all: $(NAME)
 
 $(NAME): $(LEXR) $(OBJS)
 		@$(CLANG) $(FLAGS) -o $@ $(OBJS)
+		@echo $(NAME) > .gitignore
 		@echo "\033[35;1m[abstractVM] compilation SUCCESS"
 
 $(DIR_SRCS)/%.cpp: $(DIR_LEX)/%.flex
@@ -46,6 +52,10 @@ fclean: clean
 		@rm -f $(NAME)
 		@echo "cleaning executable abstractVM"
 
-re: fclean all
+re:
+		@make fclean
+		@make opti
 
-.PHONY: clean fclean re
+.PHONY: all clean fclean re
+
+-include $(DPDS)

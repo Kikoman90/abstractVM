@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/04 18:41:47 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/07 19:10:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/13 18:49:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #define I_OPERAND_HPP
 
 #include <string>
-#include <iostream>
 
 enum eOperandType {
 	Int8,
