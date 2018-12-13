@@ -34,7 +34,6 @@ all: $(NAME)
 
 $(NAME): $(LEXR) $(OBJS)
 		@$(CLANG) $(FLAGS) -o $@ $(OBJS)
-		@echo $(NAME) > .gitignore
 		@echo "\033[35;1m[abstractVM] compilation SUCCESS"
 
 $(DIR_SRCS)/%.cpp: $(DIR_LEX)/%.flex
