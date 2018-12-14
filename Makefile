@@ -49,7 +49,7 @@ clean:
 
 fclean: clean
 		@rm -f $(NAME)
-		@echo "cleaning executable abstractVM"
+		@echo "cleaning executable 'avm'"
 
 re:
 		@make fclean
