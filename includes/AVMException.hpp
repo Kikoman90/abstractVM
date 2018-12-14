@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:52:16 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/10 15:42:12 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 18:26:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,11 @@ class AVMException : public std::exception {
 public:
     
     AVMException();
-    AVMException(std::string const msg, unsigned int line = 0);
+    AVMException(std::string const msg);
     AVMException(AVMException const &src);
     ~AVMException() throw();
 
     const char          *what() const throw();
-
-    bool                empty() const;
-    void                addMsg(std::string const msg, unsigned int line = 0);
-    std::string const   &getMsg() const;
 
 private:
     

@@ -1,0 +1,10 @@
+;=======================
+;= 15_missing_exit.avm =
+;=======================
+
+push double(42)
+push int32(8)
+dump
+pop
+pop
+;where is exit man ?

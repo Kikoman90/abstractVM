@@ -1,0 +1,27 @@
+;===================
+;= 19_overflow.avm =
+;===================
+
+push int8(65)
+push int8(2)
+mul
+push int8(-64)
+dump
+mul
+dump
+push int8(+1)
+sub
+
+push int16(32768)
+pop
+push int32(2147483647)
+push int16(1)
+add
+
+push float(3.4027e+38)
+; pow int8(2)
+push double(3.4028e+38)
+; pow int16(5)
+mul
+
+exit

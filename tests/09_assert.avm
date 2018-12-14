@@ -1,6 +1,6 @@
-; --------------------
-; 17_assert_hard.avm -
-; --------------------
+;=================
+;= 09_assert.avm =
+;=================
 
 push int8(42)
 assert int8(42)
@@ -12,5 +12,9 @@ push float(98.4242)
 assert float(98.4242)
 push double(42.424242)
 assert double(42.424242)
+push double(+12e2f)
+assert double(0.12e4)
 
 exit
+
+

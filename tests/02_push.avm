@@ -1,0 +1,11 @@
+;===============
+;= 02_push.avm =
+;===============
+
+push int8(-32)
+push int16(4242)
+push int32(+42424242)
+push float(42.42f)
+push double(0.42424242)
+dump
+exit

@@ -1,16 +1,22 @@
-; -----------------------
-; 13_mod_types_hard.avm -
-; -----------------------
+;==============
+;= 07_mod.avm =
+;==============
 
 push int8(42)
 push int16(2)
 mod
+dump
 
 push int32(8)
 mod
+dump
 
-push int8(2)
+pop
+
+push int16(59)
+push int8(9)
 mod
+dump
 
 push float(3.05)
 mod

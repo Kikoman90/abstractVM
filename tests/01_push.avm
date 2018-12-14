@@ -1,0 +1,9 @@
+;===============
+;= 01_push.avm =
+;===============
+
+push int8(49)
+dump
+print
+pop
+exit

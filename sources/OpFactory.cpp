@@ -6,12 +6,21 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 15:13:38 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 13:37:37 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 15:02:49 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "OpFactory.hpp"
 #include "Operand.hpp"
+#include <utility>
+
+std::pair<eOperandType, std::string> pairs[] = {std::make_pair(Int8, "int8"),
+                                                std::make_pair(Int16, "int16"),
+                                                std::make_pair(Int32, "int32"),
+                                                std::make_pair(Float, "float"),
+                                                std::make_pair(Double, "double") };
+
+std::map<eOperandType, std::string> OpFactory::_opMap(pairs, pairs + 5);
 
 OpFactory::OpFactory() {
     _tab[0] = &OpFactory::createInt8;

@@ -1,0 +1,28 @@
+;================================
+;= 17_multiple_instructions.avm =
+;================================
+
+;float(30.12f)
+
+;push push
+
+pushing egro
+
+assert double(32.3f)
+
+psuh assert
+push psu
+push psuh
+;efkw push float(32.f) double(233) int8(16)
+
+;float(12) assert pop double(32) 
+
+;float() assert ;eror
+
+;push int8(42) assert int8(42)
+pop
+dump
+push		
+;push float(32e+2f) double(4515.3f)
+assert
+push

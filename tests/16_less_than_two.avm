@@ -1,0 +1,20 @@
+;========================
+;= 16_less_than_two.avm =
+;========================
+
+push double(42)
+mul
+
+push int8(15)
+pop
+dump
+
+add
+
+sub
+
+mod
+
+div
+
+exit

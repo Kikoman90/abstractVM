@@ -1,28 +1,29 @@
-; -----------------------
-; 05_add_types_hard.avm -
-; -----------------------
+;==============
+;= 03_add.avm =
+;==============
 
 push int8(42)
 push int16(2987)
-sub
+add
+dump
 
 push int32(98755)
-sub
+add
 
 push int8(84)
-sub
+add
 
 push float(3457.409)
-sub
+add
 
 push int32(67)
-sub
+add
 
 push int16(890)
-sub
+add
 
 push double(0.678909)
-sub
+add
 
 dump
 

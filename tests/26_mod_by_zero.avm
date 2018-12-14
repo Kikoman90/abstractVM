@@ -1,7 +1,0 @@
-; --------------------
-; 26_mod_by_zero.avm -
-; --------------------
-push double(42)
-push int32(0)
-mod
-exit

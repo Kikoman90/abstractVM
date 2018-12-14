@@ -1,0 +1,15 @@
+;====================
+;= 20_underflow.avm =
+;====================
+
+push float(1.4012e-45)
+push float(+2.42e-45f)
+push float(+1.5e-1)
+dump
+mul
+dump
+pop
+pop
+push double(4.9407e-323)
+;pow int16(150)
+exit

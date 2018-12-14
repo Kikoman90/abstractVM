@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:28:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 18:52:47 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 20:10:52 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include "OpFactory.hpp"
 #include <iostream>
 #include <map>
+
+#define AVM_NO_THROW 1
+#define AVM_INFO 1
 
 class Parser {
 
@@ -34,6 +37,11 @@ private:
 
     Parser      &operator=(Parser const &rhs);
 
+    void        avm_info(const std::string instr, bool success = true) const;
+    void        avm_info(const std::string instr, const eOperandType type, const std::string value, bool success = true) const;
+    void        avm_info(const std::string op, IOperand const *v1, IOperand const *v2, bool success = true) const;
+    void        avm_error(const std::string msg, unsigned int line = 0);
+
     void        push(std::list<lexeme>::const_iterator const &it);
     void        pop(std::list<lexeme>::const_iterator const &it);
     void        dump(std::list<lexeme>::const_iterator const &it);
@@ -47,8 +55,7 @@ private:
 
     unsigned int                _line;
     OpFactory const             _opf;
-    AVMException                _avme;
-    std::list<lexeme> const     _lexemes;
+    std::list<lexeme>           _lexemes;
     std::list<IOperand const *> _operands;
 
     std::map<eToken, eOperandType>                                                  _operandType;

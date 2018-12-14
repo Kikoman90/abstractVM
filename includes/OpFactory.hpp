@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 14:47:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 13:38:05 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 15:40:31 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "IOperand.hpp"
 #include <array>
+#include <map>
 
 class OpFactory {
 
@@ -24,6 +25,8 @@ public:
     ~OpFactory();
 
     IOperand const  *createOperand(eOperandType type, std::string const &value) const;
+
+    static std::map<eOperandType, std::string>  _opMap;
 
 private:
 

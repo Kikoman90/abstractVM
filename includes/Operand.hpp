@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 11:12:40 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 18:50:24 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 20:17:54 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ public:
             if (type < Float) {
                 long long val = std::stoll(str);
                 if (check_overflow<long long>(val, type))
-                    throw AVMException("parser error: integer overflow");
+                    throw AVMException("error: integer overflow");
                 _value = static_cast<T>(val);
                 strs << std::setprecision(precision) << val;
                 _str = strs.str();
@@ -45,16 +45,16 @@ public:
             else {
                 long double val = std::stold(str);
                 if (check_overflow<long double>(val, _type))
-                    throw AVMException("parser error: floating point overflow");
+                    throw AVMException("error: floating point overflow");
                 if (check_underflow<long double>(val, _type))
-                    throw AVMException("parser error: floating point underflow");
+                    throw AVMException("error: floating point underflow");
                 _value = static_cast<T>(val);
                 strs << std::setprecision(precision) << val;
                 _str = strs.str();
             }
         }
         catch (std::out_of_range &oor) {
-            throw AVMException("parser error: overflow or underflow");
+            throw AVMException("error: overflow or underflow");
         }
     
     }
@@ -76,15 +76,15 @@ public:
         if (type < Float) {
             long long val = static_cast<long long>(_value) + std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
-                throw AVMException("parser error: integer addition leads to overflow"); // ADD TYPE
+                throw AVMException("error: integer addition leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
             long double val = static_cast<long double>(_value) + std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
-                throw AVMException("parser error: floating point addition leads to overflow"); // ADD TYPE
+                throw AVMException("error: floating point addition leads to overflow");
             if (check_underflow<long double>(val, type))
-                throw AVMException("parser error: floating point addition leads to underflow"); // ADD TYPE
+                throw AVMException("error: floating point addition leads to underflow");
             strs << std::setprecision(precision) << val;
         }
         return _opf->createOperand(type, strs.str());
@@ -100,15 +100,15 @@ public:
         if (type < Float) {
             long long val = static_cast<long long>(_value) - std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
-                throw AVMException("parser error: integer substraction leads to overflow");
+                throw AVMException("error: integer substraction leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
             long double val = static_cast<long double>(_value) - std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
-                throw AVMException("parser error: floating point substraction leads to overflow");
+                throw AVMException("error: floating point substraction leads to overflow");
             if (check_underflow<long double>(val, type))
-                throw AVMException("parser error: floating point substraction leads to underflow");
+                throw AVMException("error: floating point substraction leads to underflow");
             strs << std::setprecision(precision) << val;
         }
         return _opf->createOperand(type, strs.str());
@@ -124,15 +124,15 @@ public:
         if (type < Float) {
             long long val = static_cast<long long>(_value) * std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
-                throw AVMException("parser error: integer multiplication leads to overflow");
+                throw AVMException("error: integer multiplication leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
             long double val = static_cast<long double>(_value) * std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
-                throw AVMException("parser error: floating point multiplication leads to overflow");
+                throw AVMException("error: floating point multiplication leads to overflow");
             if (check_underflow<long double>(val, type))
-                throw AVMException("parser error: floating point multiplication leads to underflow");
+                throw AVMException("error: floating point multiplication leads to underflow");
             strs << std::setprecision(precision) << val;
         }
         return _opf->createOperand(type, strs.str());
@@ -150,15 +150,15 @@ public:
         if (type < Float) {
             long long val = static_cast<long long>(_value) / std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
-                throw AVMException("parser error: integer division leads to overflow");
+                throw AVMException("error: integer division leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
             long double val = static_cast<long double>(_value) / std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
-                throw AVMException("parser error: floating point division leads to overflow");
+                throw AVMException("error: floating point division leads to overflow");
             if (check_underflow<long double>(val, type))
-                throw AVMException("parser error: floating point division leads to underflow");
+                throw AVMException("error: floating point division leads to underflow");
             strs << std::setprecision(precision) << val;
         }
         return _opf->createOperand(type, strs.str());
@@ -176,22 +176,22 @@ public:
         if (type < Float) {
             long long val = static_cast<long long>(_value) % std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
-                throw AVMException("parser error: integer modulo leads to overflow");
+                throw AVMException("error: integer modulo leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
             long double val = fmodl(static_cast<long double>(_value), std::stold(rhs.toString()));
             if (check_overflow<long double>(val, type))
-                throw AVMException("parser error: floating point modulo leads to overflow");
+                throw AVMException("error: floating point modulo leads to overflow");
             if (check_underflow<long double>(val, type))
-                throw AVMException("parser error: floating point modulo leads to underflow");
+                throw AVMException("error: floating point modulo leads to underflow");
             strs << std::setprecision(precision) << val;
         }
         return _opf->createOperand(type, strs.str());
 
     }
 
-    std::string const   &toString(void) const { return (_str); } 
+    std::string const   &toString(void) const { return (_str); }
 
 private:
 

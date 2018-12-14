@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:18:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 18:46:06 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 18:45:59 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define LEXER_HPP
 
 #include "AVMException.hpp"
+#include <sys/stat.h>
+#include <errno.h>
 #include <list>
 
 enum eToken {
@@ -36,7 +38,7 @@ enum eToken {
     INT32 = 1 << 16,
     FLOAT = 1 << 17,
     DOUBLE = 1 << 18,
-    ERROR = 1 << 19,
+    ERROR = 1 << 19
 };
 
 struct lexeme {

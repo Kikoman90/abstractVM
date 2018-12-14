@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 19:19:27 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/14 20:10:36 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,23 +33,87 @@ Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
 
 }
 
+void        Parser::avm_info(const std::string instr, bool success) const {
+
+    std::cout << ((success) ? "\033[32;4m" : "\033[31;4m");
+    std::cout << "[AVM:" << _line << "] " << instr << std::endl;
+    std::cout << "\033[0;0m";
+
+}
+
+void        Parser::avm_info(const std::string instr, const eOperandType type, const std::string value, bool success) const {
+
+    std::cout << ((success) ? "\033[32;4m" : "\033[31;4m");
+    std::cout << "[AVM:" << _line << "] " << instr << ' ' << _opf._opMap[type] << '(' << value << ")\n";
+    std::cout << "\033[0;0m";
+
+}
+
+void        Parser::avm_info(const std::string op, IOperand const *v1, IOperand const *v2, bool success) const {
+    
+    std::cout << ((success) ? "\033[32;4m" : "\033[31;4m");
+    std::cout << "[AVM:" << _line<< "] " << op << '{' << _opf._opMap[v1->getType()] << '(' << v1->toString() << "), " << _opf._opMap[v2->getType()] << '(' << v2->toString() << ")}\n";
+    std::cout << "\033[0;0m";
+    
+}
+
+void        Parser::avm_error(const std::string msg, unsigned int line) {
+
+    std::stringstream strs;
+
+    strs << "\033[31m";
+    if (line == 0)
+        strs << msg;
+    else
+        strs << msg << " (line " << line << ")";
+    if (AVM_NO_THROW)
+        std::cout << strs.str() << std::endl;
+    else
+        throw AVMException(strs.str());
+
+}
+
 void        Parser::exec() {
 
+    bool    error;
+    eToken  prev_type = EOL;
+
     for (std::list<lexeme>::const_iterator it = _lexemes.begin(); it != _lexemes.end(); ++it) {
-        if (it->type == EOL)
-            _line++;
-        else if (std::next(it) != _lexemes.end() && !(it->type & (PUSH | ASSERT | COMMENT)) && !(std::next(it)->type & (COMMENT | EOL)))
-            _avme.addMsg("parser error: multiple instructions", _line);
-        if (it->type == EXIT) {
-            if (!_avme.empty())
-                throw _avme;
-            return ;
+        error = false;
+        std::list<lexeme>::const_iterator fst = it;
+        while (it != _lexemes.end() && it->type != EOL) {
+            if (it->type <= EXIT && prev_type != EOL)
+                error = true;
+            else if (it->type & ERROR)
+                error = true;
+            else if (it->type >= INT8 && !(prev_type & (PUSH | ASSERT)))
+                error = true;
+            prev_type = it->type;
+            it++;
         }
-        else if (it->type < EXIT)
+        if (error) {
+            avm_error("error: multiple/invalid/unknown instructions", _line);
+            if (AVM_INFO)
+                std::cout << std::endl;
+            it = _lexemes.erase(fst, it);
+        }
+        else
+            it = fst;
+        if (it != _lexemes.end() && it->type & EOL)
+            _line++;
+        else if (it != _lexemes.end() && it->type & EXIT) {
+            if (AVM_INFO)
+                avm_info("exit");
+            return ; 
+        }
+        else if (it != _lexemes.end() && it->type < EXIT) {
             (this->*_operations[it->type])(it);
+            if (AVM_INFO)
+                std::cout << std::endl;
+        }
+        prev_type = it->type;
     }
-    _avme.addMsg("parser error: missing 'exit' instruction");
-    throw _avme;
+    avm_error("parser error: missing 'exit' instruction");
 }
 
 void        Parser::push(const std::list<lexeme>::const_iterator &it) {
@@ -57,15 +121,19 @@ void        Parser::push(const std::list<lexeme>::const_iterator &it) {
     std::list<lexeme>::const_iterator it_next;
 
     if ((it_next = std::next(it)) == _lexemes.end() || it_next->type < INT8) {
-        _avme.addMsg("parser error: 'push' instruction must be followed by a value", _line);
+        if (AVM_INFO)
+            avm_info("push", false);
+        avm_error("error: 'push' instruction must be followed by a value", _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("push", _operandType[it_next->type], it_next->value);
     try {
         IOperand const *op = _opf.createOperand(_operandType[it_next->type], it_next->value);
         _operands.push_front(op);
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        avm_error(e.what(), _line);
     }
 
 }
@@ -74,9 +142,13 @@ void        Parser::pop(const std::list<lexeme>::const_iterator &it) {
     
     (void)it;
     if (_operands.empty()) {
-        _avme.addMsg("parser error: 'pop' instruction on empty stack", _line);
+        if (AVM_INFO)
+            avm_info("pop", false);
+        avm_error("error: 'pop' instruction on empty stack", _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("pop");
     delete _operands.front();
     _operands.pop_front();
 
@@ -85,8 +157,14 @@ void        Parser::pop(const std::list<lexeme>::const_iterator &it) {
 void        Parser::dump(const std::list<lexeme>::const_iterator &it) {
     
     (void)it;
-    for (std::list<IOperand const *>::const_iterator it = _operands.begin(); it != _operands.end(); ++it)
-        std::cout << (*it)->toString() << std::endl;
+    if (AVM_INFO)
+        avm_info("dump");
+    for (std::list<IOperand const *>::const_iterator it = _operands.begin(); it != _operands.end(); ++it) {
+        if (AVM_INFO)
+            std::cout << _opf._opMap[(*it)->getType()] << '(' << (*it)->toString() << ')' << std::endl;
+        else
+            std::cout << (*it)->toString() << std::endl;
+    }
 
 }
 
@@ -95,19 +173,28 @@ void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
     std::list<lexeme>::const_iterator   it_next;
     int                                 error = 0;
     
-    if (_operands.empty()) {
-        _avme.addMsg("parser error: 'assert' instruction on empty stack", _line);
+    if ((it_next = std::next(it)) == _lexemes.end() || it_next->type < INT8) {
+        if (AVM_INFO)
+            avm_info("assert", false);
+        avm_error("error: 'assert' instruction must be followed by a value", _line);
         error = 1;
     }
-    if ((it_next = std::next(it)) == _lexemes.end() || it_next->type < INT8) {
-        _avme.addMsg("parser error: 'assert' instruction must be followed by a value", _line);
+    if (_operands.empty()) {
+        if (!error && AVM_INFO)
+            avm_info("assert", _operandType[it_next->type], it_next->value, false);
+        avm_error("error: 'assert' instruction on empty stack", _line);        
         error = 1;
     }
     if (error)
         return ;
     IOperand const *op = _opf.createOperand(_operandType[it_next->type], it_next->value);
-    if (op->getType() != _operands.front()->getType() || op->toString().compare(_operands.front()->toString()))
-        _avme.addMsg("parser error: 'assert' instruction is false", _line);
+    if (op->getType() != _operands.front()->getType() || op->toString().compare(_operands.front()->toString())) {
+        if (AVM_INFO)
+            avm_info("assert", _operandType[it_next->type], it_next->value, false);
+        avm_error("error: 'assert' instruction is false", _line);        
+    }
+    else if (AVM_INFO)
+        avm_info("assert", _operandType[it_next->type], it_next->value);
 
 }
 
@@ -115,24 +202,30 @@ void        Parser::add(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.size() < 2) {
-        _avme.addMsg("parser error: 'add' operation; less than 2 values on the stack", _line);
+        if (AVM_INFO)
+            avm_info("add", false);
+        avm_error("error: 'add' operation; less than two values on the stack", _line);
         return ;
     }
     std::list<const IOperand *>::const_iterator iter = _operands.begin();
     IOperand const *v1 = *iter;
     std::advance(iter, 1);
     IOperand const *v2 = *iter;
-    IOperand const *sub;
+    IOperand const *add;
     try {
-        sub = *v2 + *v1;
+        add = *v2 + *v1;
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        if (AVM_INFO)
+            avm_info("add", v2, v1, false);
+        avm_error(e.what(), _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("add", v2, v1);
     _operands.pop_front();
     _operands.pop_front();
-    _operands.push_front(sub);
+    _operands.push_front(add);
     delete v1;
     delete v2;
 
@@ -142,7 +235,9 @@ void        Parser::sub(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.size() < 2) {
-        _avme.addMsg("parser error: 'sub' operation; less than 2 values on the stack", _line);
+        if (AVM_INFO)
+            avm_info("sub", false);
+        avm_error("error: 'sub' operation; less than two values on the stack", _line);
         return ;
     }
     std::list<const IOperand *>::const_iterator iter = _operands.begin();
@@ -154,9 +249,13 @@ void        Parser::sub(const std::list<lexeme>::const_iterator &it) {
         sub = *v2 - *v1;
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        if (AVM_INFO)
+            avm_info("sub", v2, v1, false);
+        avm_error(e.what(), _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("sub", v2, v1);
     _operands.pop_front();
     _operands.pop_front();
     _operands.push_front(sub);
@@ -169,24 +268,30 @@ void        Parser::mul(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.size() < 2) {
-        _avme.addMsg("parser error: 'mul' operation; less than 2 values on the stack", _line);
+        if (AVM_INFO)
+            avm_info("mul", false);
+        avm_error("error: 'mul' operation; less than two values on the stack", _line);
         return ;
     }
     std::list<const IOperand *>::const_iterator iter = _operands.begin();
     IOperand const *v1 = *iter;
     std::advance(iter, 1);
     IOperand const *v2 = *iter;
-    IOperand const *sub;
+    IOperand const *mul;
     try {
-        sub = *v2 * *v1;
+        mul = *v2 * *v1;
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        if (AVM_INFO)
+            avm_info("mul", v2, v1, false);
+        avm_error(e.what(), _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("mul", v2, v1);
     _operands.pop_front();
     _operands.pop_front();
-    _operands.push_front(sub);
+    _operands.push_front(mul);
     delete v1;
     delete v2;
 
@@ -196,24 +301,30 @@ void        Parser::div(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.size() < 2) {
-        _avme.addMsg("parser error: 'div' operation; less than 2 values on the stack", _line);
+        if (AVM_INFO)
+            avm_info("div", false);
+        avm_error("error: 'div' operation; less than two values on the stack", _line);
         return ;
     }
     std::list<const IOperand *>::const_iterator iter = _operands.begin();
     IOperand const *v1 = *iter;
     std::advance(iter, 1);
     IOperand const *v2 = *iter;
-    IOperand const *sub;
+    IOperand const *div;
     try {
-        sub = *v2 / *v1;
+        div = *v2 / *v1;
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        if (AVM_INFO)
+            avm_info("div", v2, v1, false);
+        avm_error(e.what(), _line);
         return ;
     }
+    if (AVM_INFO)
+        avm_info("div", v2, v1);
     _operands.pop_front();
     _operands.pop_front();
-    _operands.push_front(sub);
+    _operands.push_front(div);
     delete v1;
     delete v2;
 
@@ -223,24 +334,30 @@ void        Parser::mod(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.size() < 2) {
-        _avme.addMsg("parser error: 'mod' operation; less than 2 values on the stack", _line);
+        if (AVM_INFO)
+            avm_info("mod", false);
+        avm_error("error: 'mod' operation; less than two values on the stack", _line);
         return ;
     }
     std::list<const IOperand *>::const_iterator iter = _operands.begin();
     IOperand const *v1 = *iter;
     std::advance(iter, 1);
     IOperand const *v2 = *iter;
-    IOperand const *sub;
+    IOperand const *mod;
     try {
-        sub = *v2 % *v1;
+        mod = *v2 % *v1;
     }
     catch (AVMException &e) {
-        _avme.addMsg(e.getMsg(), _line);
+        if (AVM_INFO)
+            avm_info("mod", v2, v1, false);
+        avm_error(e.what(), _line);        
         return ;
     }
+    if (AVM_INFO)
+        avm_info("mod", v2, v1);
     _operands.pop_front();
     _operands.pop_front();
-    _operands.push_front(sub);
+    _operands.push_front(mod);
     delete v1;
     delete v2;
 
@@ -250,14 +367,20 @@ void        Parser::print(const std::list<lexeme>::const_iterator &it) {
 
     (void)it;
     if (_operands.empty()) {
-        _avme.addMsg("parser error: 'print' instruction on empty stack", _line);
+        if (AVM_INFO)
+            avm_info("print", false);
+        avm_error("error: 'print' instruction on empty stack", _line);
         return ;
     }
     IOperand const *op = _operands.front();
     if (op->getType() != Int8) {
-        _avme.addMsg("parser error: 'print' instruction; type is not 8-bit integer", _line);
+        if (AVM_INFO)
+            avm_info("print", false);
+        avm_error("error: 'print' instruction; type is not 8-bit integer", _line);       
         return ;
     }
+    if (AVM_INFO)
+        avm_info("print");
     std::cout << static_cast<char>(std::stoi(op->toString())) << std::endl;
 
 }
