@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:18:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/14 18:45:59 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/17 19:11:04 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,35 +16,45 @@
 #include "AVMException.hpp"
 #include <sys/stat.h>
 #include <errno.h>
+#include <fstream>
 #include <list>
+#include <map> //?
+#include <regex>
 
 enum eToken {
-    PUSH = 1 << 0,
-    POP = 1 << 1,
-    DUMP = 1 << 2,
-    ASSERT = 1 << 3,
-    ADD = 1 << 4,
-    SUB = 1 << 5,
-    MUL = 1 << 6,
-    DIV = 1 << 7,
-    MOD = 1 << 8,
-    PRINT = 1 << 9,
-    EXIT = 1 << 10,
-    END = 1 << 11,
-    COMMENT = 1 << 12,
-    EOL = 1 << 13,
-    INT8 = 1 << 14,
-    INT16 = 1 << 15,
-    INT32 = 1 << 16,
-    FLOAT = 1 << 17,
-    DOUBLE = 1 << 18,
-    ERROR = 1 << 19
+    PUSH = 1,
+    POP,
+    DUMP,
+    ASSERT,
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    MOD,
+    PRINT,
+    EXIT,
+    END,
+    COMMENT,
+    EOL,
+    INT8,
+    INT16,
+    INT32,
+    FLOAT,
+    DOUBLE,
+    ERROR
+};
+
+enum lexState {
+    INITIAL = 1 << 0,
+    STATE_INTEGER = 1 << 1,
+    STATE_FLOAT = 1 << 2,   
+    RESET = 1 << 3
 };
 
 struct lexeme {
 
-    eToken              type;
-    std::string const   value;
+    eToken      type;
+    std::string value;
 
 };
 
@@ -55,9 +65,16 @@ public:
     Lexer(int ac, char **av);
     ~Lexer();
 
+    lexeme                  match(std::string const &line, int *offset) const;
+    //int                     match(std::string const &line, int *offset) const;
+    //void                    match(std::list<lexeme> &subList, std::string const &line) const;
     void                    exec();
+    void                    showTokens(); // remove me
 
     std::list<lexeme> const &getLexemes() const;
+
+    static std::map<eToken, std::string>   _toktostr; // rem
+    static std::map<std::string, eToken>   _strtotok; // rem
 
 private:
     
@@ -66,8 +83,13 @@ private:
 
     Lexer                   &operator=(Lexer const &rhs);
 
-    std::list<lexeme>   _lexemes;
+    std::regex          _reg_init;
+    std::regex          _reg_integer;
+    std::regex          _reg_float;
+    lexState            _state;
     bool                _inputFromFile;
+    std::ifstream       _filestream;
+    std::list<lexeme>   _lexemes;
 
 };
 

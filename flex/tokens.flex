@@ -26,7 +26,7 @@
 
 "push"                                                      return PUSH;
 "pop"                                                       return POP;
-"dump"                                                      return DUMP;
+"dump"                                                   return DUMP;
 "assert"                                                    return ASSERT;
 "add"                                                       return ADD;
 "sub"                                                       return SUB;

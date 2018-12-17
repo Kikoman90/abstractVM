@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/14 20:10:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/17 15:43:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ void        Parser::exec() {
         while (it != _lexemes.end() && it->type != EOL) {
             if (it->type <= EXIT && prev_type != EOL)
                 error = true;
-            else if (it->type & ERROR)
+            else if (it->type == ERROR)
                 error = true;
-            else if (it->type >= INT8 && !(prev_type & (PUSH | ASSERT)))
+            else if (it->type >= INT8 && (prev_type != PUSH || prev_type != ASSERT))
                 error = true;
             prev_type = it->type;
             it++;
@@ -95,13 +95,13 @@ void        Parser::exec() {
             avm_error("error: multiple/invalid/unknown instructions", _line);
             if (AVM_INFO)
                 std::cout << std::endl;
-            it = _lexemes.erase(fst, it);
+            //it = _lexemes.erase(fst, it); // useful ?
         }
         else
             it = fst;
-        if (it != _lexemes.end() && it->type & EOL)
+        if (it != _lexemes.end() && it->type == EOL)
             _line++;
-        else if (it != _lexemes.end() && it->type & EXIT) {
+        else if (it != _lexemes.end() && it->type == EXIT) {
             if (AVM_INFO)
                 avm_info("exit");
             return ; 
