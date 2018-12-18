@@ -1,14 +1,16 @@
 ;====================
 ;= 12_pop_empty.avm =
-;====================
+;====================	
+		
+push		float(	 16.2f)		
+pop		
 
-push float(16.2f)
-pop
+pushpop		
 
-
-
-
-
+	
+			
                 pop
+
+	pushint32(	23	 )	
 
  exit   

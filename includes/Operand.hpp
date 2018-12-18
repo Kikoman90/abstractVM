@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 11:12:40 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/14 20:17:54 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/18 21:07:24 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,13 @@ public:
         int precision = (_precision >= rhs.getPrecision()) ? _precision : rhs.getPrecision();
         eOperandType type = (_type >= rhs.getType()) ? _type : rhs.getType();
         if (type < Float) {
-            long long val = static_cast<long long>(_value) + std::stoll(rhs.toString());
+            long long val = std::stoll(toString()) + std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
                 throw AVMException("error: integer addition leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
-            long double val = static_cast<long double>(_value) + std::stold(rhs.toString());
+            long double val = std::stold(toString()) + std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
                 throw AVMException("error: floating point addition leads to overflow");
             if (check_underflow<long double>(val, type))
@@ -98,13 +98,13 @@ public:
         int precision = (_precision >= rhs.getPrecision()) ? _precision : rhs.getPrecision();
         eOperandType type = (_type >= rhs.getType()) ? _type : rhs.getType();
         if (type < Float) {
-            long long val = static_cast<long long>(_value) - std::stoll(rhs.toString());
+            long long val = std::stoll(toString()) - std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
                 throw AVMException("error: integer substraction leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
-            long double val = static_cast<long double>(_value) - std::stold(rhs.toString());
+            long double val = std::stold(toString()) - std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
                 throw AVMException("error: floating point substraction leads to overflow");
             if (check_underflow<long double>(val, type))
@@ -122,13 +122,13 @@ public:
         int precision = (_precision >= rhs.getPrecision()) ? _precision : rhs.getPrecision();
         eOperandType type = (_type >= rhs.getType()) ? _type : rhs.getType();
         if (type < Float) {
-            long long val = static_cast<long long>(_value) * std::stoll(rhs.toString());
+            long long val = std::stoll(toString()) * std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
                 throw AVMException("error: integer multiplication leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
-            long double val = static_cast<long double>(_value) * std::stold(rhs.toString());
+            long double val = std::stold(toString()) * std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
                 throw AVMException("error: floating point multiplication leads to overflow");
             if (check_underflow<long double>(val, type))
@@ -148,13 +148,13 @@ public:
         if (std::stold(rhs.toString()) == 0)
             throw AVMException("error: division by zero");
         if (type < Float) {
-            long long val = static_cast<long long>(_value) / std::stoll(rhs.toString());
+            long long val = std::stoll(toString()) / std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
                 throw AVMException("error: integer division leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
-            long double val = static_cast<long double>(_value) / std::stold(rhs.toString());
+            long double val = std::stold(toString()) / std::stold(rhs.toString());
             if (check_overflow<long double>(val, type))
                 throw AVMException("error: floating point division leads to overflow");
             if (check_underflow<long double>(val, type))
@@ -174,13 +174,13 @@ public:
         if (std::stold(rhs.toString()) == 0)
             throw AVMException("error: modulo by zero");
         if (type < Float) {
-            long long val = static_cast<long long>(_value) % std::stoll(rhs.toString());
+            long long val = std::stoll(toString()) % std::stoll(rhs.toString());
             if (check_overflow<long long>(val, type))
                 throw AVMException("error: integer modulo leads to overflow");
             strs << std::setprecision(precision) << val;
         }
         else {
-            long double val = fmodl(static_cast<long double>(_value), std::stold(rhs.toString()));
+            long double val = fmodl(std::stold(toString()), std::stold(rhs.toString()));
             if (check_overflow<long double>(val, type))
                 throw AVMException("error: floating point modulo leads to overflow");
             if (check_underflow<long double>(val, type))

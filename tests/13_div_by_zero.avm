@@ -5,5 +5,8 @@
 push double(42)
 push int32(0)
 div
+pop
+push float(-0000f)
+div
 
 exit

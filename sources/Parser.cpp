@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/17 15:43:32 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/18 23:00:04 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void        Parser::avm_error(const std::string msg, unsigned int line) {
         std::cout << strs.str() << std::endl;
     else
         throw AVMException(strs.str());
+    std::cout << "\033[0m";
 
 }
 
@@ -86,7 +87,7 @@ void        Parser::exec() {
                 error = true;
             else if (it->type == ERROR)
                 error = true;
-            else if (it->type >= INT8 && (prev_type != PUSH || prev_type != ASSERT))
+            else if (it->type >= INT8 && (prev_type != PUSH && prev_type != ASSERT))
                 error = true;
             prev_type = it->type;
             it++;
@@ -95,7 +96,8 @@ void        Parser::exec() {
             avm_error("error: multiple/invalid/unknown instructions", _line);
             if (AVM_INFO)
                 std::cout << std::endl;
-            //it = _lexemes.erase(fst, it); // useful ?
+            if (it == _lexemes.end())
+                break;
         }
         else
             it = fst;
@@ -114,6 +116,7 @@ void        Parser::exec() {
         prev_type = it->type;
     }
     avm_error("parser error: missing 'exit' instruction");
+
 }
 
 void        Parser::push(const std::list<lexeme>::const_iterator &it) {

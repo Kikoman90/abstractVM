@@ -1,6 +1,11 @@
 ;================
 ;= 00_print.avm =
 ;================
+pushexit
+
+popdump
+
+		addpop
 
 push int8(42)
 print

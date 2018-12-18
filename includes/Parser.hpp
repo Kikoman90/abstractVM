@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:28:10 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/14 20:10:52 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/18 21:58:09 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 
 #include "Lexer.hpp"
 #include "OpFactory.hpp"
-#include <iostream>
-#include <map>
 
 #define AVM_NO_THROW 1
 #define AVM_INFO 1
@@ -55,7 +53,7 @@ private:
 
     unsigned int                _line;
     OpFactory const             _opf;
-    std::list<lexeme>           _lexemes;
+    std::list<lexeme> const     _lexemes;
     std::list<IOperand const *> _operands;
 
     std::map<eToken, eOperandType>                                                  _operandType;
