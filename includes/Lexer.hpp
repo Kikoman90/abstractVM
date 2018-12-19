@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:18:54 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/18 22:59:34 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/19 18:20:25 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ enum eToken {
     MUL,
     DIV,
     MOD,
+    POW,
     PRINT,
     EXIT,
     END,

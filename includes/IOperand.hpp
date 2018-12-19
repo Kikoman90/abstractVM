@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/04 18:41:47 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/13 18:49:36 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/19 19:22:20 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ public:
 	virtual IOperand const		*operator*(IOperand const & rhs) const = 0;
 	virtual IOperand const		*operator/(IOperand const &rhs) const = 0;
 	virtual IOperand const		*operator%(IOperand const &rhs) const = 0;
+	virtual IOperand const		*operator^(IOperand const &rhs) const = 0;
 
 	virtual std::string const	&toString(void) const = 0;
 

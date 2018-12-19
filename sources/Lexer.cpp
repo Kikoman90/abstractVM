@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:10:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/18 22:58:49 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/19 18:20:13 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ Lexer::Lexer(int ac, char **av) : _inputFromFile(false), _lexemes(0) {
     _reg_init = std::regex(     "[\\r\\t\\f ]*"
                                 "(?:"
                                     "(?:\\b(?:(push)|(pop)|(dump)|(assert)|"
-                                    "(add)|(sub)|(mul)|(div)|(mod)|(print)|(exit))\\b)|"
+                                    "(add)|(sub)|(mul)|(div)|(mod)|(pow)|(print)|(exit))\\b)|"
                                     "(;;(?:[\\r\\t\\f ]*)(?:$|\\n))|(;.*)|(\\n)|"
                                     "(?:\\b(?:(int8\\()|(int16\\()|(int32\\()|(float\\()|(double\\()))|(.*)"
                                 "))");

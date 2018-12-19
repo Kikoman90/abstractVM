@@ -2,6 +2,8 @@
 ;= 19_overflow.avm =
 ;===================
 
+push int8(20000)
+
 push int8(65)
 push int8(2)
 mul

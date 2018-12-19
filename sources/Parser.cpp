@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/06 17:30:14 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/18 23:00:04 by fsidler          ###   ########.fr       */
+/*   Updated: 2018/12/19 19:35:39 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ Parser::Parser(const std::list<lexeme> &lexemes) : _line(1), _lexemes(lexemes) {
     _operations[MUL] = &Parser::mul;
     _operations[DIV] = &Parser::div;
     _operations[MOD] = &Parser::mod;
+    _operations[POW] = &Parser::pow;
     _operations[PRINT] = &Parser::print;
 
     _operandType[INT8] = Int8;
@@ -87,7 +88,7 @@ void        Parser::exec() {
                 error = true;
             else if (it->type == ERROR)
                 error = true;
-            else if (it->type >= INT8 && (prev_type != PUSH && prev_type != ASSERT))
+            else if (it->type >= INT8 && (prev_type != PUSH && prev_type != ASSERT && prev_type != POW))
                 error = true;
             prev_type = it->type;
             it++;
@@ -129,15 +130,18 @@ void        Parser::push(const std::list<lexeme>::const_iterator &it) {
         avm_error("error: 'push' instruction must be followed by a value", _line);
         return ;
     }
-    if (AVM_INFO)
-        avm_info("push", _operandType[it_next->type], it_next->value);
     try {
         IOperand const *op = _opf.createOperand(_operandType[it_next->type], it_next->value);
         _operands.push_front(op);
     }
     catch (AVMException &e) {
+        if (AVM_INFO)
+            avm_info("push", _operandType[it_next->type], it_next->value, false);
         avm_error(e.what(), _line);
+        return ;
     }
+    if (AVM_INFO)
+        avm_info("push", _operandType[it_next->type], it_next->value);
 
 }
 
@@ -190,7 +194,16 @@ void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
     }
     if (error)
         return ;
-    IOperand const *op = _opf.createOperand(_operandType[it_next->type], it_next->value);
+    IOperand const *op;
+    try {
+        op = _opf.createOperand(_operandType[it_next->type], it_next->value);
+    }
+    catch (AVMException &e) {
+        if (AVM_INFO)
+            avm_info("assert", _operandType[it_next->type], it_next->value, false);
+        avm_error(e.what(), _line);
+        return ;
+    }
     if (op->getType() != _operands.front()->getType() || op->toString().compare(_operands.front()->toString())) {
         if (AVM_INFO)
             avm_info("assert", _operandType[it_next->type], it_next->value, false);
@@ -198,6 +211,7 @@ void        Parser::assert(const std::list<lexeme>::const_iterator &it) {
     }
     else if (AVM_INFO)
         avm_info("assert", _operandType[it_next->type], it_next->value);
+    delete op;
 
 }
 
@@ -363,6 +377,51 @@ void        Parser::mod(const std::list<lexeme>::const_iterator &it) {
     _operands.push_front(mod);
     delete v1;
     delete v2;
+
+}
+
+void        Parser::pow(const std::list<lexeme>::const_iterator &it) {
+
+    std::list<lexeme>::const_iterator   it_next;
+    int                                 error = 0;
+    
+    if ((it_next = std::next(it)) == _lexemes.end() || (it_next->type < INT8 || it_next->type > INT32)) {
+        if (AVM_INFO) {
+            if (it_next != _lexemes.end() && (it_next->type == FLOAT || it_next->type == DOUBLE))
+                avm_info("pow", _operandType[it_next->type], it_next->value, false);
+            else
+                avm_info("pow", false);
+        }
+        avm_error("error: 'pow' instruction must be followed by an integer value", _line);
+        error = 1;
+    }
+    if (_operands.empty()) {
+        if (!error && AVM_INFO)
+            avm_info("pow", _operandType[it_next->type], it_next->value, false);
+        avm_error("error: 'pow' instruction on empty stack", _line);        
+        error = 1;
+    }
+    if (error)
+        return ;
+    IOperand const *v = _operands.front();
+    IOperand const *pow;
+    IOperand const *res;
+    try {
+        pow = _opf.createOperand(_operandType[it_next->type], it_next->value);
+        res = *v ^ *pow;
+    }
+    catch (AVMException &e) {
+        if (AVM_INFO)
+            avm_info("pow", v, pow, false);
+        avm_error(e.what(), _line);
+        return ;
+    }
+    if (AVM_INFO)
+        avm_info("pow", v, pow);
+    _operands.pop_front();
+    _operands.push_front(res);
+    delete v;
+    delete pow;
 
 }
 
