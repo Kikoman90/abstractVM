@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 16:10:22 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/19 18:20:13 by fsidler          ###   ########.fr       */
+/*   Updated: 2019/01/02 15:20:32 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ lexeme                      Lexer::match(std::string const &line, size_t *offset
         for (size_t i = 1; i < match.size(); ++i) {
             if (!match[i].str().empty()) {
                 if ((lex.type = static_cast<eToken>(i)) >= INT8 && lex.type <= INT32) {
-                    if (std::regex_match(line.begin() + *offset, line.end(), match, _reg_integer)) {
+                    if (std::regex_search(line.begin() + *offset, line.end(), match, _reg_integer)) {
                         if (line.back() == '\n')
                             *offset -= 1;
                         *offset += match.length();
@@ -81,7 +81,7 @@ lexeme                      Lexer::match(std::string const &line, size_t *offset
                         lex.type = ERROR;
                 }
                 else if (lex.type == FLOAT || lex.type == DOUBLE) {
-                    if (std::regex_match(line.begin() + *offset, line.end(), match, _reg_float)) {
+                    if (std::regex_search(line.begin() + *offset, line.end(), match, _reg_float)) {
                         if (line.back() == '\n')
                             *offset -= 1;
                         *offset += match.length();

@@ -6,7 +6,7 @@
 /*   By: fsidler <fsidler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 11:12:40 by fsidler           #+#    #+#             */
-/*   Updated: 2018/12/19 19:41:14 by fsidler          ###   ########.fr       */
+/*   Updated: 2019/01/02 14:47:15 by fsidler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,9 +259,8 @@ private:
     }
 
     template<typename U>
-    static bool         check_underflow(__unused U v, eOperandType type) {
+    static bool         check_underflow(U v, eOperandType type) {
 
-        (void)v;
         switch (type) {
             case Float:
                 return ((v > 0 && v < FLT_TRUE_MIN) || (v < 0 && v > -FLT_TRUE_MIN));

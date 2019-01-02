@@ -10,9 +10,7 @@ pushing egro
 
 assert double(32.3f)
 
-psuh assert
-push psu
-push psuh
+pop assert double(32.3f)
 ;efkw push float(32.f) double(233) int8(16)
 
 ;float(12) assert pop double(32) 
